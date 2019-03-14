@@ -733,8 +733,12 @@ class IPAddressAssignView(PermissionRequiredMixin, View):
             queryset = IPAddress.objects.select_related(
                 'vrf', 'tenant', 'interface__device', 'interface__virtual_machine'
             ).filter(
+                Q(
+                    address__istartswith=form.cleaned_data['address']
+                ) | Q(
+                    description_icontains=form.cleaned_data['address']
+                ),
                 vrf=form.cleaned_data['vrf'],
-                address__istartswith=form.cleaned_data['address'],
             )[:100]  # Limit to 100 results
             table = tables.IPAddressAssignTable(queryset)
 
